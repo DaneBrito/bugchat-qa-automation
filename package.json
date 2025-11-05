@@ -1,0 +1,20 @@
+{
+  "name": "bugchat-qa-automation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BugChat \u2013 QA Messaging Test Project: Cypress UI/API tests, Postman (Newman), and GitHub Actions CI.",
+  "scripts": {
+    "test:ui": "cypress run",
+    "test:ui:headed": "cypress run --headed --browser chrome",
+    "test:open": "cypress open",
+    "test:api:newman": "newman run postman/bugchat.postman_collection.json --reporters cli,junit --reporter-junit-export reports/newman-junit.xml",
+    "test:all": "npm run test:ui && npm run test:api:newman",
+    "pretest": "mkdir -p reports",
+    "posttest": "echo 'Tests finished'"
+  },
+  "devDependencies": {
+    "cypress": "^13.7.0",
+    "cypress-mochawesome-reporter": "^3.8.2",
+    "newman": "^6.1.2"
+  }
+}
