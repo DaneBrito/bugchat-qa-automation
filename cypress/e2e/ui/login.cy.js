@@ -15,14 +15,32 @@ describe('Login flow (stubbed)', () => {
   })
 
   it('logs in successfully with valid credentials', function () {
-    cy.visit('/')
-    cy.request('POST', '/api/login', { email: this.user.email, password: this.user.password }).as('loginCall')
-    cy.get('@loginCall').its('status').should('eq', 200)
-    cy.get('@login').should('have.property', 'callCount')
+    cy.visit('/') // garante contexto de browser
+    cy.window().then(async (win) => {
+      const res = await win.fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: this.user.email, password: this.user.password }),
+      })
+      expect(res.status).to.eq(200)
+      const data = await res.json()
+      expect(data).to.have.property('token', 'fake-jwt')
+      expect(data.user).to.have.property('name', 'QA Dani')
+    })
+    cy.get('@login').its('callCount').should('be.gte', 1)
   })
 
   it('rejects invalid credentials', () => {
-    cy.request({ method: 'POST', url: '/api/login', body: { email: 'wrong@user', password: 'nope' }, failOnStatusCode: false })
-      .its('status').should('eq', 401)
+    cy.visit('/')
+    cy.window().then(async (win) => {
+      const res = await win.fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'wrong@user', password: 'nope' }),
+      })
+      expect(res.status).to.eq(401)
+    })
+    cy.get('@login').its('callCount').should('be.gte', 1)
   })
 })
+
