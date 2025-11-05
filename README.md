@@ -1,5 +1,7 @@
 # 🐞 BugChat – QA Messaging Test Project
 
+[![CI Status](https://github.com/DaneBrito/bugchat-qa-automation/actions/workflows/ci.yml/badge.svg)](https://github.com/DaneBrito/bugchat-qa-automation/actions)
+
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-green?logo=node.js)](https://nodejs.org/)
 [![Cypress](https://img.shields.io/badge/Cypress-13.x-04C38E?logo=cypress)](https://www.cypress.io/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-CI-blue?logo=githubactions)](https://github.com/features/actions)
