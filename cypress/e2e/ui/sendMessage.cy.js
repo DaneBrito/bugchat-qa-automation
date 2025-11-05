@@ -14,13 +14,31 @@ describe('Send message (mocked)', () => {
   })
 
   it('sends a message successfully', () => {
-    cy.request('POST', '/api/messages', { text: 'Hello, BugChat!' }).as('msgCall')
-    cy.get('@msgCall').its('status').should('eq', 201)
-    cy.get('@sendMessage').should('have.property', 'callCount')
+    cy.visit('/')
+    cy.window().then(async (win) => {
+      const res = await win.fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: 'Hello, BugChat!' }),
+      })
+      expect(res.status).to.eq(201)
+      const data = await res.json()
+      expect(data).to.have.property('status', 'sent')
+    })
+    cy.get('@sendMessage').its('callCount').should('be.gte', 1)
   })
 
   it('validates required text field', () => {
-    cy.request({ method: 'POST', url: '/api/messages', body: {}, failOnStatusCode: false })
-      .its('status').should('eq', 400)
+    cy.visit('/')
+    cy.window().then(async (win) => {
+      const res = await win.fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({}),
+      })
+      expect(res.status).to.eq(400)
+    })
+    cy.get('@sendMessage').its('callCount').should('be.gte', 1)
   })
 })
+
