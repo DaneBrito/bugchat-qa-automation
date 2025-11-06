@@ -17,7 +17,8 @@ describe('Chat history (latency + order)', () => {
   it('loads history and preserves order', () => {
     cy.visit('/')
     cy.window().then(async (win) => {
-      const res = await win.fetch('/api/messages')
+      const url = `${win.location.origin}/api/messages
+      const res = await win.fetch(url)
       expect(res.status).to.eq(200)
       const body = await res.json()
       expect(body.items.map(m => m.text)).to.deep.eq(['First', 'Second', 'Third'])
