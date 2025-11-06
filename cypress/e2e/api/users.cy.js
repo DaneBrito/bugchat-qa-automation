@@ -1,19 +1,20 @@
 /// <reference types="cypress" />
 describe('Users API shape (sample)', () => {
-  beforeEach(() => {
-    cy.intercept('GET', '**/api/users', {
-      statusCode: 200,
-      body: { users: [{ id: 1, name: 'QA Dani' }] },
-    }).as('getUsers')
-  })
-
   it('GET returns metadata (sample placeholder)', () => {
+    const payload = { meta: { total: 3 }, data: [{ id: 1 }, { id: 2 }, { id: 3 }] };
+
+    cy.intercept('GET', '/api/users', {
+      statusCode: 200,
+      body: payload,
+    }).as('users');
+
     cy.request('/api/users')
-      .its('body.users')
-      .should((arr) => {
-        expect(arr).to.be.an('array')
-        expect(arr[0]).to.have.property('name')
-      })
-    cy.wait('@getUsers')
-  })
-})
+      .its('body')
+      .should((body) => {
+        expect(body).to.have.property('meta');
+        expect(body.meta).to.have.property('total', 3);
+      });
+
+    cy.wait('@users');
+  });
+});
