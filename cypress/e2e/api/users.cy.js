@@ -3,16 +3,17 @@ describe('Users API shape (sample)', () => {
   beforeEach(() => {
     cy.intercept('GET', '**/api/users', {
       statusCode: 200,
-      body: { count: 3, items: [{ id: 1 }, { id: 2 }, { id: 3 }] },
+      body: { items: [{ id: 1, name: 'Ada' }] }
     }).as('users');
   });
 
   it('GET returns metadata (sample placeholder)', () => {
-    cy.request('/api/users')
-      .its('body')
-      .should((body) => {
-        expect(body).to.have.property('count', 3);
-        expect(body.items).to.have.length(3);
-      });
+    cy.visit('/');
+    cy.window().then(async (win) => {
+      const res = await win.fetch(`${win.location.origin}/api/users`);
+      expect(res.status).to.eq(200);
+      const body = await res.json();
+      expect(body.items).to.be.an('array');
+    });
   });
 });

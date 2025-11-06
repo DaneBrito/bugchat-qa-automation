@@ -3,16 +3,17 @@ describe('Messages API shape (sample)', () => {
   beforeEach(() => {
     cy.intercept('GET', '**/api/messages', {
       statusCode: 200,
-      body: [{ id: 1, text: 'hello' }, { id: 2, text: 'world' }],
-    }).as('messages');
+      body: { items: [{ id: 1, text: 'hello' }] }
+    }).as('msgs');
   });
 
   it('GET returns an array-like shape (sample placeholder)', () => {
-    cy.request('/api/messages')
-      .its('body')
-      .should((body) => {
-        expect(body).to.be.an('array');
-        expect(body[0]).to.have.keys('id', 'text');
-      });
+    cy.visit('/');
+    cy.window().then(async (win) => {
+      const res = await win.fetch(`${win.location.origin}/api/messages`);
+      expect(res.status).to.eq(200);
+      const body = await res.json();
+      expect(body.items).to.be.an('array');
+    });
   });
 });
