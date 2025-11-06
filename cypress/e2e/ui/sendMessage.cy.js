@@ -4,7 +4,11 @@
 describe('Send message (mocked)', () => {
   beforeEach(() => {
     cy.intercept('POST', '/api/messages', (req) => {
-      const { text } = req.body || {}
+      let body = req.body
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body) } catch (e) { body = {} }
+      }
+      const { text } = body || {}
       if (!text) {
         req.reply({ statusCode: 400, body: { message: 'Text is required' } })
       } else {
@@ -18,12 +22,11 @@ describe('Send message (mocked)', () => {
     cy.window().then(async (win) => {
       const res = await win.fetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: 'Hello, BugChat!' }),
       })
       expect(res.status).to.eq(201)
       const data = await res.json()
-      expect(data).to.have.property('status', 'sent')
+      expect(data.status).to.eq('sent')
     })
     cy.get('@sendMessage').its('callCount').should('be.gte', 1)
   })
@@ -33,7 +36,6 @@ describe('Send message (mocked)', () => {
     cy.window().then(async (win) => {
       const res = await win.fetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),
       })
       expect(res.status).to.eq(400)
@@ -41,4 +43,3 @@ describe('Send message (mocked)', () => {
     cy.get('@sendMessage').its('callCount').should('be.gte', 1)
   })
 })
-
