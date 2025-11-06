@@ -28,7 +28,7 @@ describe('Send message (mocked)', () => {
       const data = await res.json()
       expect(data.status).to.eq('sent')
     })
-    cy.get('@sendMessage').its('callCount').should('be.gte', 1)
+    cy.wait('@sendMessage')
   })
 
   it('validates required text field', () => {
