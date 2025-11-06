@@ -31,7 +31,7 @@ describe('Login flow (stubbed)', () => {
       expect(data.token).to.eq('fake-jwt')
       expect(data.user.name).to.eq('QA Dani')
     })
-    cy.get('@login').its('callCount').should('be.gte', 1)
+    cy.wait('@login')
   })
 
   it('rejects invalid credentials', () => {
