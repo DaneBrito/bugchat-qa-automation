@@ -8,6 +8,7 @@ module.exports = defineConfig({
     },
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
+    screenshotOnRunFailure: true,
   },
   reporter: 'cypress-mochawesome-reporter',
   reporterOptions: {
