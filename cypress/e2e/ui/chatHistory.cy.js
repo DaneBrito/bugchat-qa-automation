@@ -19,10 +19,8 @@ describe('Chat history (latency + order)', () => {
       const res = await win.fetch('/api/messages')
       expect(res.status).to.eq(200)
       const body = await res.json()
-      const order = body.items.map((m) => m.text)
-      expect(order).to.deep.eq(['First', 'Second', 'Third'])
+      expect(body.items.map(m => m.text)).to.deep.eq(['First','Second','Third'])
     })
     cy.get('@fetchHistory').its('callCount').should('be.gte', 1)
   })
 })
-
