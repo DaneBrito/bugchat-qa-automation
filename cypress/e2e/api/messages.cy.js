@@ -1,9 +1,19 @@
 /// <reference types="cypress" />
 describe('Messages API shape (sample)', () => {
+  beforeEach(() => {
+    cy.intercept('GET', '**/api/messages', {
+      statusCode: 200,
+      body: { items: [{ id: 1, text: 'hello' }, { id: 2, text: 'world' }] },
+    }).as('getMessages')
+  })
+
   it('GET returns an array-like shape (sample placeholder)', () => {
-    cy.request('https://httpbin.org/anything/messages').then((res) => {
-      expect(res.status).to.eq(200)
-      expect(res.body).to.have.property('method', 'GET')
-    })
+    cy.request('/api/messages')
+      .its('body.items')
+      .should((arr) => {
+        expect(arr).to.be.an('array')
+        expect(arr[0]).to.have.property('text')
+      })
+    cy.wait('@getMessages')
   })
 })
