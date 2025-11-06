@@ -1,14 +1,14 @@
 const { defineConfig } = require('cypress')
+
 module.exports = defineConfig({
   e2e: {
     baseUrl: 'https://example.cypress.io',
     setupNodeEvents(on, config) {
-      require('cypress-mochawesome-reporter/plugin')(on);
+      require('cypress-mochawesome-reporter/plugin')(on)
       return config
     },
     specPattern: 'cypress/e2e/**/*.cy.js',
     supportFile: 'cypress/support/e2e.js',
-    screenshotOnRunFailure: true,
   },
   reporter: 'cypress-mochawesome-reporter',
   reporterOptions: {
