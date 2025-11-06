@@ -4,12 +4,15 @@
 describe('Login flow (stubbed)', () => {
   beforeEach(() => {
     cy.fixture('user').as('user')
-    cy.intercept('POST', '/api/login', (req) => {
+
+    cy.intercept('POST', '**/api/login', (req) => {
+      // req.body may arrive as string or object
       let body = req.body
       if (typeof body === 'string') {
-        try { body = JSON.parse(body) } catch (e) { body = {} }
+        try { body = JSON.parse(body) } catch { body = {} }
       }
       const { email, password } = body || {}
+
       if (email === 'qa@bugchat.io' && password === 'super-secret') {
         req.reply({ statusCode: 200, body: { token: 'fake-jwt', user: { id: 1, name: 'QA Dani' } } })
       } else {
@@ -23,9 +26,8 @@ describe('Login flow (stubbed)', () => {
     cy.window().then(async (win) => {
       const res = await win.fetch('/api/login', {
         method: 'POST',
-        //without headers to avoid preflight
         body: JSON.stringify({ email: this.user.email, password: this.user.password }),
-      })
+      }) // without headers to avoid preflight
       expect(res.status).to.eq(200)
       const data = await res.json()
       expect(data.token).to.eq('fake-jwt')
@@ -40,9 +42,9 @@ describe('Login flow (stubbed)', () => {
       const res = await win.fetch('/api/login', {
         method: 'POST',
         body: JSON.stringify({ email: 'wrong@user', password: 'nope' }),
-      })
+      }) // without headers to avoid preflight
       expect(res.status).to.eq(401)
     })
-    cy.get('@login').its('callCount').should('be.gte', 1)
+    cy.wait('@login')
   })
 })
