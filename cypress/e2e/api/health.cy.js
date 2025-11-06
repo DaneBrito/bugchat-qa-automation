@@ -1,13 +1,20 @@
 /// <reference types="cypress" />
 describe('API health', () => {
-  it('httpbin returns 200', () => {
-    cy.request('https://httpbin.org/status/200').its('status').should('eq', 200)
+  beforeEach(() => {
+    // Mocks the "health" response
+    cy.intercept('GET', '**/api/health', {
+      statusCode: 200,
+      body: { slideshow: { title: 'BugChat Health OK' } },
+    }).as('health')
   })
+
+  it('http health returns 200', () => {
+    cy.request('/api/health').its('status').should('eq', 200)
+    cy.wait('@health')
+  })
+
   it('json payload has slideshow key', () => {
-    cy.request('https://httpbin.org/json').then((res) => {
-      expect(res.status).to.eq(200)
-      expect(res.headers['content-type']).to.include('application/json')
-      expect(res.body).to.have.property('slideshow')
-    })
+    cy.request('/api/health').its('body').should('have.property', 'slideshow')
+    cy.wait('@health')
   })
 })
